@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,11 @@
     <link rel="stylesheet" href="index.css">
     <title>我的导航</title>
 </head>
+
 <body>
     <header></header>
-    <main >
+    <main>
+
         <div class="wrapper" id="x">
 
         </div>
@@ -18,64 +21,101 @@
 </body>
 
 <script>
-    var keys ={
-        0:['q','w','e','r','t','y','u','i','o','p'],
-        1:['a','s','d','f','g','h','j','k','l'],
-        2:['z','x','c','v','b','n','m'],
-        length:3   //这是个二维数组，所有有length
+    //1.初始化数组
+    var keys = {
+        0: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+        1: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+        2: ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+        length: 3   //这是个二维数组，所有有length
     }
     var hash = {
-        q:'qq.com',
-        w:'weibo.com',
-        e:'ele.me',
-        r:'renren.com',
-        t:'tianya.com',
-        y:'youtube.com',
-        u:'uc.com',
-        i:'iqiyi.com',
-        o:'opera.com',
-        p:undefined,
-        a:'acfun.tv',
-        s:'souhu.com',
-        z:'zhihu.com',
-        m:'www.macdonaids.com'
+        q: 'qq.com',
+        w: 'weibo.com',
+        e: 'ele.me',
+        r: 'renren.com',
+        t: 'tianya.com',
+        y: 'youtube.com',
+        u: 'uc.com',
+        i: 'iqiyi.com',
+        o: 'opera.com',
+        p: undefined,
+        a: 'acfun.tv',
+        s: 'souhu.com',
+        z: 'zhihu.com',
+        m: 'www.macdonaids.com'
     }
     //去除localstorage 中 随意 对应的hash
-    var hashInLocalStorage = JSON.parse(localStorage.getItem("随意")||'null')
-    if(hashInLocalStorage){
+    var hashInLocalStorage = getFromLocalStorage("随意");
+    if (hashInLocalStorage) {
         hash = hashInLocalStorage;
     }
+
+    function getFromLocalStorage(name){
+        JSON.parse(localStorage.getItem("随意") || 'null');
+        //JSON.parse(localStorage.getItem(name) || 'null');
+    }
+
+
+    //2.生成一个键盘
     // 遍历 keys ， 生成 kbd 标签
-    index = 0;
-    while(index < keys['length']){
-        div1 = window.document.createElement('div');
+    var index = 0;
+    while (index < keys['length']) {  // 0 1 2
+        var div1 = window.document.createElement('div');
+        div1.className = "row";
         x.appendChild(div1);
-        index2 = 0;
+        var index2 = 0;
         row = keys[index];   // 第一个数组，第二个数组，第三个数组
-        while(index2 <row.length){
-            z = document.createElement('kbd'); // 0~9 0~8 0~6
-            z.textContent = row[index2];   //z内的文本内容赋值
+        while (index2 < row.length) {
+            var z = document.createElement('kbd'); // 0~9 0~8 0~6
+            var span = document.createElement("span");
+            span.className = "text";
+            span.textContent = row[index2]; //z内的文本内容赋值
+            z.appendChild(span);
+            z.className = "key";   //添加class 名字
             buttonx = document.createElement("button");
-            buttonx.textContent = "编辑";
             buttonx.id = row[index2];
-            buttonx.onclick = function(a){
+            buttonx.textContent = "编辑";
+            imgxx = document.createElement("img");
+            if (hash[row[index2]]) {
+                imgxx.src = 'http://' + hash[row[index2]] + '/favicon.ico';
+            } else {
+                // imgxx.src="";//设置图片为空，不失败
+            }
+            imgxx.onerror = function (xxx) {   //监听错误
+                console.log("下载失败了");
+                // xxx.target.src = ""; //设置图片为空，不失败
+            }
+
+            buttonx.onclick = function (a) {
                 console.log('被点击');
                 console.log(a['target']['id']); //用户点击目标
-                key = a['target']['id'];
-                user = prompt('给我一个网址'); //获取用户输入
+                button2 = a['target'];
+                console.log(button2.previousSibling);
+                var img2 = button2.previousSibling;
+                var key = button2['id'];
+                var user = prompt('给我一个网址'); //获取用户输入
                 hash[key] = user; //hash变更
+                img2.src = 'http://' + user + "/favicon.ico";
+                img2.onerror = function (xxx) {   //监听错误
+                    console.log("下载失败了");
+                    // xxx.target.src = ""; //设置图片为空，不失败
+                }
+
                 localStorage.setItem("随意", JSON.stringify(hash));// 修改保存
 
             }
+            z.appendChild(imgxx);
             z.appendChild(buttonx);
             div1.appendChild(z);
             index2 = index2 + 1;
         }
-        
+
         index = index + 1;
     }
 
-    window.onkeypress = function(name_xiaqude){   //监听
+
+    //3.监听键盘
+    window.onkeypress = function (name_xiaqude) {   //监听
         // console.log("我发现你输入了一个键");
         // console.log("你案件的时候的所有信息");
         // console.log(name_xiaqude['key']);
@@ -83,7 +123,8 @@
         website = hash[key];
         console.log(website);
         //location.href = 'http://'+ website;  //设置当前 地址栏的 地址
-        window.open( 'http://'+ website,'_blank');// 设置窗口打开： 地址 + 如可打开
+        window.open('http://' + website, '_blank');// 设置窗口打开： 地址 + 如可打开
     }
 </script>
+
 </html>
